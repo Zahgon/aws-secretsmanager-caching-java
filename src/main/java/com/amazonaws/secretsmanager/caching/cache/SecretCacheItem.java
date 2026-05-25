@@ -10,15 +10,12 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-
 package com.amazonaws.secretsmanager.caching.cache;
 
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
-
 import com.amazonaws.secretsmanager.caching.SecretCacheConfiguration;
-
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 import software.amazon.awssdk.services.secretsmanager.model.DescribeSecretRequest;
 import software.amazon.awssdk.services.secretsmanager.model.DescribeSecretResponse;
@@ -28,11 +25,12 @@ import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRespon
  * The cached secret item which contains information from the DescribeSecret
  * request to AWS Secrets Manager along with any associated GetSecretValue
  * results.
- *
  */
 public class SecretCacheItem extends SecretCacheObject<DescribeSecretResponse> {
 
-    /** The cached secret value versions for this cached secret. */
+    /**
+     * The cached secret value versions for this cached secret.
+     */
     private LRUCache<String, SecretCacheVersion> versions = new LRUCache<String, SecretCacheVersion>(10);
 
     /**
@@ -52,28 +50,23 @@ public class SecretCacheItem extends SecretCacheObject<DescribeSecretResponse> {
      * @param config
      *            Cache configuration.
      */
-    public SecretCacheItem(final String secretId,
-                           final SecretsManagerClient client,
-                           final SecretCacheConfiguration config) {
+    public SecretCacheItem(final String secretId, final SecretsManagerClient client, final SecretCacheConfiguration config) {
         super(secretId, client, config);
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof SecretCacheItem) {
-            return Objects.equals(this.secretId, ((SecretCacheItem)obj).secretId);
-        }
-        return false;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public int hashCode() {
-        return String.format("%s", this.secretId).hashCode();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public String toString() {
-        return String.format("SecretCacheItem: %s", this.secretId);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -85,12 +78,7 @@ public class SecretCacheItem extends SecretCacheObject<DescribeSecretResponse> {
      */
     @Override
     protected boolean isRefreshNeeded() {
-        if (super.isRefreshNeeded()) { return true; }
-        if (null != this.exception) { return false; }
-        if (System.currentTimeMillis() >= this.nextRefreshTime) {
-            return true;
-        }
-        return false;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -100,12 +88,7 @@ public class SecretCacheItem extends SecretCacheObject<DescribeSecretResponse> {
      */
     @Override
     protected DescribeSecretResponse executeRefresh() {
-        DescribeSecretResponse describeSecretResponse = client.describeSecret(DescribeSecretRequest.builder().secretId(this.secretId).build());
-        long ttl = this.config.getCacheItemTTL();
-        this.nextRefreshTime = System.currentTimeMillis() +
-                ThreadLocalRandom.current().nextLong(ttl / 2,ttl + 1) ;
-
-        return describeSecretResponse;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -116,20 +99,17 @@ public class SecretCacheItem extends SecretCacheObject<DescribeSecretResponse> {
      * @return The cached secret version.
      */
     private SecretCacheVersion getVersion(DescribeSecretResponse describeResponse) {
-        if (null == describeResponse) { return null; }
-        if (null == describeResponse.versionIdsToStages()) { return null; }
-        Optional<String> currentVersionId = describeResponse.versionIdsToStages().entrySet()
-                .stream()
-                .filter(Objects::nonNull)
-                .filter(x -> x.getValue() != null)
-                .filter(x -> x.getValue().contains(this.config.getVersionStage()))
-                .map(x -> x.getKey())
-                .findFirst();
+        if (null == describeResponse) {
+            return null;
+        }
+        if (null == describeResponse.versionIdsToStages()) {
+            return null;
+        }
+        Optional<String> currentVersionId = describeResponse.versionIdsToStages().entrySet().stream().filter(Objects::nonNull).filter(x -> x.getValue() != null).filter(x -> x.getValue().contains(this.config.getVersionStage())).map(x -> x.getKey()).findFirst();
         if (currentVersionId.isPresent()) {
             SecretCacheVersion version = versions.get(currentVersionId.get());
             if (null == version) {
-                versions.putIfAbsent(currentVersionId.get(),
-                        new SecretCacheVersion(this.secretId, currentVersionId.get(), this.client, this.config));
+                versions.putIfAbsent(currentVersionId.get(), new SecretCacheVersion(this.secretId, currentVersionId.get(), this.client, this.config));
                 version = versions.get(currentVersionId.get());
             }
             return version;
@@ -146,9 +126,6 @@ public class SecretCacheItem extends SecretCacheObject<DescribeSecretResponse> {
      */
     @Override
     protected GetSecretValueResponse getSecretValue(DescribeSecretResponse describeResponse) {
-        SecretCacheVersion version = getVersion(describeResponse);
-        if (null == version) { return null; }
-        return version.getSecretValue();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
-
 }

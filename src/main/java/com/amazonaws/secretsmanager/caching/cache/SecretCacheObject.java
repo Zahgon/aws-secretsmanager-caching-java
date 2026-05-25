@@ -10,12 +10,10 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-
 package com.amazonaws.secretsmanager.caching.cache;
 
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import com.amazonaws.secretsmanager.caching.SecretCacheConfiguration;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
@@ -26,10 +24,14 @@ import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRespon
  */
 public abstract class SecretCacheObject<T> {
 
-    /** The number of milliseconds to wait after an exception. */
+    /**
+     * The number of milliseconds to wait after an exception.
+     */
     private static final long EXCEPTION_BACKOFF = 1000;
 
-    /** The growth factor of the backoff duration. */
+    /**
+     * The growth factor of the backoff duration.
+     */
     private static final long EXCEPTION_BACKOFF_GROWTH_FACTOR = 2;
 
     /**
@@ -38,22 +40,34 @@ public abstract class SecretCacheObject<T> {
      */
     private static final long BACKOFF_PLATEAU = EXCEPTION_BACKOFF * 128;
 
-    /** The secret identifier for this cached object. */
+    /**
+     * The secret identifier for this cached object.
+     */
     protected final String secretId;
 
-    /** A private object to synchronize access to certain methods. */
+    /**
+     * A private object to synchronize access to certain methods.
+     */
     protected final Object lock = new Object();
 
-    /** The AWS Secrets Manager client to use for requesting secrets. */
+    /**
+     * The AWS Secrets Manager client to use for requesting secrets.
+     */
     protected final SecretsManagerClient client;
 
-    /** The Secret Cache Configuration. */
+    /**
+     * The Secret Cache Configuration.
+     */
     protected final SecretCacheConfiguration config;
 
-    /** A flag to indicate a refresh is needed. */
+    /**
+     * A flag to indicate a refresh is needed.
+     */
     private final AtomicBoolean refreshNeeded = new AtomicBoolean(true);
 
-    /** The result of the last AWS Secrets Manager request for this item. */
+    /**
+     * The result of the last AWS Secrets Manager request for this item.
+     */
     private Object data = null;
 
     /**
@@ -87,9 +101,7 @@ public abstract class SecretCacheObject<T> {
      *            The secret cache configuration.
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP2")
-    public SecretCacheObject(final String secretId,
-                             final SecretsManagerClient client,
-                             final SecretCacheConfiguration config) {
+    public SecretCacheObject(final String secretId, final SecretsManagerClient client, final SecretCacheConfiguration config) {
         this.secretId = secretId;
         this.client = client;
         this.config = config;
@@ -113,7 +125,9 @@ public abstract class SecretCacheObject<T> {
     protected abstract GetSecretValueResponse getSecretValue(T result);
 
     public abstract boolean equals(Object obj);
+
     public abstract int hashCode();
+
     public abstract String toString();
 
     /**
@@ -124,9 +138,9 @@ public abstract class SecretCacheObject<T> {
     @SuppressWarnings("unchecked")
     private T getResult() {
         if (null != this.config.getCacheHook()) {
-            return (T)this.config.getCacheHook().get(this.data);
+            return (T) this.config.getCacheHook().get(this.data);
         }
-        return (T)this.data;
+        return (T) this.data;
     }
 
     /**
@@ -146,31 +160,16 @@ public abstract class SecretCacheObject<T> {
      * @return True if the secret item should be refreshed.
      */
     protected boolean isRefreshNeeded() {
-        if (this.refreshNeeded.get()) {
-            return true;
-        }
-        if (null != this.exception) {
-            // If we encountered an exception on the last attempt
-            // we do not want to keep retrying without a pause between
-            // the refresh attempts.
-            //
-            // If we have exceeded our backoff time we will refresh
-            // the secret now.
-            if (System.currentTimeMillis() >= this.nextRetryTime) {
-                return true;
-            }
-            // Don't keep trying to refresh a secret that previously threw
-            // an exception.
-            return false;
-        }
-        return false;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
      * Refresh the cached secret state only when needed.
      */
     private void refresh() {
-        if (!this.isRefreshNeeded()) { return; }
+        if (!this.isRefreshNeeded()) {
+            return;
+        }
         this.refreshNeeded.set(false);
         try {
             this.setResult(this.executeRefresh());
@@ -182,17 +181,16 @@ public abstract class SecretCacheObject<T> {
             // factor and default backoff duration.
             Long growth = 1L;
             if (this.exceptionBackoffPower > 0) {
-                growth = (long)Math.pow(EXCEPTION_BACKOFF_GROWTH_FACTOR, this.exceptionBackoffPower);
+                growth = (long) Math.pow(EXCEPTION_BACKOFF_GROWTH_FACTOR, this.exceptionBackoffPower);
             }
             growth *= EXCEPTION_BACKOFF;
             // Add in EXCEPTION_BACKOFF time to make sure the random jitter will not reduce
             // the wait time too low.
             Long retryWait = Math.min(EXCEPTION_BACKOFF + growth, BACKOFF_PLATEAU);
-            if ( retryWait < BACKOFF_PLATEAU ) {
+            if (retryWait < BACKOFF_PLATEAU) {
                 // Only increase the backoff power if we haven't hit the backoff plateau yet.
                 this.exceptionBackoffPower += 1;
             }
-
             // Use random jitter with the wait time
             retryWait = ThreadLocalRandom.current().nextLong(retryWait / 2, retryWait + 1);
             this.nextRetryTime = System.currentTimeMillis() + retryWait;
@@ -207,30 +205,7 @@ public abstract class SecretCacheObject<T> {
      *             If the thread is interrupted while waiting for the refresh.
      */
     public boolean refreshNow() throws InterruptedException {
-        this.refreshNeeded.set(true);
-        // When forcing a refresh, always sleep with a random jitter
-        // to prevent coding errors that could be calling refreshNow
-        // in a loop.
-        long jitter = this.config.getForceRefreshJitterMillis();
-        long sleep = ThreadLocalRandom.current()
-                .nextLong(
-                        jitter / 2,
-                        jitter + 1);
-        // Make sure we are not waiting for the next refresh after an
-        // exception.  If we are, sleep based on the retry delay of
-        // the refresh to prevent a hard loop in attempting to refresh a
-        // secret that continues to throw an exception such as AccessDenied.
-        if (null != this.exception) {
-            long wait = this.nextRetryTime - System.currentTimeMillis();
-            sleep = Math.max(wait, sleep);
-        }
-        Thread.sleep(sleep);
-
-        // Perform the requested refresh
-        synchronized (lock) {
-            refresh();
-            return (null == this.exception);
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -240,14 +215,6 @@ public abstract class SecretCacheObject<T> {
      */
     @SuppressFBWarnings("THROWS_METHOD_THROWS_RUNTIMEEXCEPTION")
     public GetSecretValueResponse getSecretValue() {
-        synchronized (lock) {
-            refresh();
-            if (null == this.data) {
-                if (null != this.exception) { throw this.exception; }
-            }
-
-            return this.getSecretValue(this.getResult());
-        }
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
-
 }

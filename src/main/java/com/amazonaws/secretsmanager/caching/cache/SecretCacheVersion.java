@@ -10,13 +10,10 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-
 package com.amazonaws.secretsmanager.caching.cache;
 
 import java.util.Objects;
-
 import com.amazonaws.secretsmanager.caching.SecretCacheConfiguration;
-
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse;
@@ -27,10 +24,14 @@ import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRespon
  */
 public class SecretCacheVersion extends SecretCacheObject<GetSecretValueResponse> {
 
-    /** The version identifier to use when requesting the secret value. */
+    /**
+     * The version identifier to use when requesting the secret value.
+     */
     private final String versionId;
 
-    /** The calculated hash for this item based on the secret and version. */
+    /**
+     * The calculated hash for this item based on the secret and version.
+     */
     private final int hash;
 
     /**
@@ -47,10 +48,7 @@ public class SecretCacheVersion extends SecretCacheObject<GetSecretValueResponse
      * @param config
      *            The secret cache configuration.
      */
-    public SecretCacheVersion(final String secretId,
-                              final String versionId,
-                              final SecretsManagerClient client,
-                              final SecretCacheConfiguration config) {
+    public SecretCacheVersion(final String secretId, final String versionId, final SecretsManagerClient client, final SecretCacheConfiguration config) {
         super(secretId, client, config);
         this.versionId = versionId;
         hash = String.format("%s %s", secretId, versionId).hashCode();
@@ -58,21 +56,17 @@ public class SecretCacheVersion extends SecretCacheObject<GetSecretValueResponse
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof SecretCacheVersion) {
-            return Objects.equals(this.secretId,((SecretCacheVersion)obj).secretId) &&
-                    Objects.equals(this.versionId, ((SecretCacheVersion)obj).versionId);
-        }
-        return false;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public int hashCode() {
-        return hash;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
     public String toString() {
-        return String.format("SecretCacheVersion: %s %s", secretId, versionId);
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -82,8 +76,7 @@ public class SecretCacheVersion extends SecretCacheObject<GetSecretValueResponse
      */
     @Override
     protected GetSecretValueResponse executeRefresh() {
-        return client.getSecretValue(
-                GetSecretValueRequest.builder().secretId(this.secretId).versionId(this.versionId).build());
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -95,7 +88,6 @@ public class SecretCacheVersion extends SecretCacheObject<GetSecretValueResponse
      */
     @Override
     protected GetSecretValueResponse getSecretValue(GetSecretValueResponse gsvResult) {
-        return gsvResult;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
-
 }

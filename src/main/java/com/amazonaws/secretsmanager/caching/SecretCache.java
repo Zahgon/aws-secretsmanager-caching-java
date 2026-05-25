@@ -13,11 +13,9 @@
 package com.amazonaws.secretsmanager.caching;
 
 import java.nio.ByteBuffer;
-
 import com.amazonaws.secretsmanager.caching.cache.LRUCache;
 import com.amazonaws.secretsmanager.caching.cache.SecretCacheItem;
 import com.amazonaws.secretsmanager.caching.cache.internal.VersionInfo;
-
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
 import software.amazon.awssdk.core.client.config.SdkAdvancedClientOption;
@@ -42,17 +40,22 @@ import software.amazon.awssdk.http.crt.AwsCrtHttpClient;
  * <p>
  * {@link SecretCache} provides an in-memory cache for secrets requested from
  * AWS Secrets Manager.
- *
  */
 public class SecretCache implements AutoCloseable {
 
-    /** The cached secret items. */
+    /**
+     * The cached secret items.
+     */
     private final LRUCache<String, SecretCacheItem> cache;
 
-    /** The cache configuration. */
+    /**
+     * The cache configuration.
+     */
     private final SecretCacheConfiguration config;
 
-    /** The AWS Secrets Manager client to use when requesting secrets. */
+    /**
+     * The AWS Secrets Manager client to use when requesting secrets.
+     */
     private final SecretsManagerClient client;
 
     /**
@@ -71,15 +74,9 @@ public class SecretCache implements AutoCloseable {
      * @param builder The builder to use for creating the AWS Secrets Manager
      *                client.
      */
-    @SuppressFBWarnings(value = "CT_CONSTRUCTOR_THROW", 
-        justification = "Delegates to constructor that validates before field initialization")
+    @SuppressFBWarnings(value = "CT_CONSTRUCTOR_THROW", justification = "Delegates to constructor that validates before field initialization")
     public SecretCache(SecretsManagerClientBuilder builder) {
-        this(new SecretCacheConfiguration().withClient(builder
-                .overrideConfiguration(
-                        builder.overrideConfiguration().toBuilder()
-                                .putAdvancedOption(SdkAdvancedClientOption.USER_AGENT_SUFFIX, VersionInfo.USER_AGENT)
-                                .build())
-                .build()));
+        this(new SecretCacheConfiguration().withClient(builder.overrideConfiguration(builder.overrideConfiguration().toBuilder().putAdvancedOption(SdkAdvancedClientOption.USER_AGENT_SUFFIX, VersionInfo.USER_AGENT).build()).build()));
     }
 
     /**
@@ -88,8 +85,7 @@ public class SecretCache implements AutoCloseable {
      * @param client The AWS Secrets Manager client to use for requesting secret
      *               values.
      */
-    @SuppressFBWarnings(value = "CT_CONSTRUCTOR_THROW", 
-        justification = "Delegates to constructor that validates before field initialization")
+    @SuppressFBWarnings(value = "CT_CONSTRUCTOR_THROW", justification = "Delegates to constructor that validates before field initialization")
     public SecretCache(SecretsManagerClient client) {
         this(new SecretCacheConfiguration().withClient(client));
     }
@@ -98,38 +94,27 @@ public class SecretCache implements AutoCloseable {
      * Constructs a new secret cache using the provided cache configuration.
      *
      * @param config The secret cache configuration.
-     * @throws IllegalArgumentException if both a custom client and postQuantumTlsEnabled 
+     * @throws IllegalArgumentException if both a custom client and postQuantumTlsEnabled
      *                                  are specified in the configuration.
      */
-    @SuppressFBWarnings(value = "CT_CONSTRUCTOR_THROW", 
-        justification = "Validation occurs before any field initialization")
+    @SuppressFBWarnings(value = "CT_CONSTRUCTOR_THROW", justification = "Validation occurs before any field initialization")
     public SecretCache(SecretCacheConfiguration config) {
         if (null == config) {
             config = new SecretCacheConfiguration();
         }
-
         if (config.getClient() != null && config.isPostQuantumTlsEnabled()) {
-            throw new IllegalArgumentException(
-                "Cannot specify both a custom client and postQuantumTlsEnabled. " +
-                "To use PQTLS, omit the custom client or configure your client with PQTLS support.");
+            throw new IllegalArgumentException("Cannot specify both a custom client and postQuantumTlsEnabled. " + "To use PQTLS, omit the custom client or configure your client with PQTLS support.");
         }
-
         this.cache = new LRUCache<String, SecretCacheItem>(config.getMaxCacheSize());
         this.config = config;
-        ClientOverrideConfiguration defaultOverride = ClientOverrideConfiguration.builder()
-                .putAdvancedOption(SdkAdvancedClientOption.USER_AGENT_SUFFIX, VersionInfo.USER_AGENT).build();
-
+        ClientOverrideConfiguration defaultOverride = ClientOverrideConfiguration.builder().putAdvancedOption(SdkAdvancedClientOption.USER_AGENT_SUFFIX, VersionInfo.USER_AGENT).build();
         if (config.getClient() != null) {
             this.client = config.getClient();
         } else {
             SecretsManagerClientBuilder builder = SecretsManagerClient.builder();
-            
             if (config.isPostQuantumTlsEnabled()) {
-                builder.httpClient(AwsCrtHttpClient.builder()
-                    .postQuantumTlsEnabled(true)
-                    .build());
+                builder.httpClient(AwsCrtHttpClient.builder().postQuantumTlsEnabled(true).build());
             }
-        
             this.client = builder.overrideConfiguration(defaultOverride).build();
         }
     }
@@ -143,8 +128,7 @@ public class SecretCache implements AutoCloseable {
     private SecretCacheItem getCachedSecret(final String secretId) {
         SecretCacheItem secret = this.cache.get(secretId);
         if (null == secret) {
-            this.cache.putIfAbsent(secretId,
-                    new SecretCacheItem(secretId, this.client, this.config));
+            this.cache.putIfAbsent(secretId, new SecretCacheItem(secretId, this.client, this.config));
             secret = this.cache.get(secretId);
         }
         return secret;
@@ -157,12 +141,7 @@ public class SecretCache implements AutoCloseable {
      * @return The string secret
      */
     public String getSecretString(final String secretId) {
-        SecretCacheItem secret = this.getCachedSecret(secretId);
-        GetSecretValueResponse gsv = secret.getSecretValue();
-        if (null == gsv) {
-            return null;
-        }
-        return gsv.secretString();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -172,12 +151,7 @@ public class SecretCache implements AutoCloseable {
      * @return The binary secret
      */
     public ByteBuffer getSecretBinary(final String secretId) {
-        SecretCacheItem secret = this.getCachedSecret(secretId);
-        GetSecretValueResponse gsv = secret.getSecretValue();
-        if (null == gsv) {
-            return null;
-        }
-        return gsv.secretBinary().asByteBuffer();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -189,8 +163,7 @@ public class SecretCache implements AutoCloseable {
      *                              the refresh.
      */
     public boolean refreshNow(final String secretId) throws InterruptedException {
-        SecretCacheItem secret = this.getCachedSecret(secretId);
-        return secret.refreshNow();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -198,7 +171,6 @@ public class SecretCache implements AutoCloseable {
      */
     @Override
     public void close() {
-        this.cache.clear();
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
-
 }

@@ -26,3 +26,8 @@ buildNumber.properties
 
 # macOS
 .DS_Store
+
+.aider*
+logs/
+.commit0_scripts/
+.github/workflows/

@@ -10,39 +10,46 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-
 package com.amazonaws.secretsmanager.caching;
 
 import java.util.concurrent.TimeUnit;
-
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 
 /**
  * Cache configuration options such as max cache size, ttl for cached items, etc.
- *
  */
 public class SecretCacheConfiguration {
 
-    /** The default cache size. */
+    /**
+     * The default cache size.
+     */
     public static final int DEFAULT_MAX_CACHE_SIZE = 1024;
 
-    /** The default TTL for an item stored in cache before access causing a refresh. */
+    /**
+     * The default TTL for an item stored in cache before access causing a refresh.
+     */
     public static final long DEFAULT_CACHE_ITEM_TTL = TimeUnit.HOURS.toMillis(1);
 
-    /** The default version stage to use when retrieving secret values. */
+    /**
+     * The default version stage to use when retrieving secret values.
+     */
     public static final String DEFAULT_VERSION_STAGE = "AWSCURRENT";
 
-    /** 
+    /**
      * The default maximum jitter value in milliseconds to use when forcing a refresh.
      * This prevents continuous refreshNow() calls by adding a random sleep.
      */
     public static final long DEFAULT_FORCE_REFRESH_JITTER = 100;
 
-    /** The client this cache instance will use for accessing AWS Secrets Manager. */
+    /**
+     * The client this cache instance will use for accessing AWS Secrets Manager.
+     */
     private SecretsManagerClient client = null;
 
-    /** Used to hook in-memory cache updates. */
+    /**
+     * Used to hook in-memory cache updates.
+     */
     private SecretCacheHook cacheHook = null;
 
     /**
@@ -72,14 +79,13 @@ public class SecretCacheConfiguration {
      */
     private long forceRefreshJitterMillis = DEFAULT_FORCE_REFRESH_JITTER;
 
-    /** 
-     * Whether to enable Post-Quantum TLS. 
-     * */
+    /**
+     * Whether to enable Post-Quantum TLS.
+     */
     private boolean postQuantumTlsEnabled = false;
 
     /**
      * Default constructor for the SecretCacheConfiguration object.
-     *
      */
     public SecretCacheConfiguration() {
     }
@@ -91,9 +97,8 @@ public class SecretCacheConfiguration {
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP")
     public SecretsManagerClient getClient() {
-        return client;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
-
 
     /**
      * Sets the AWS Secrets Manager client that should be used by the cache for requesting
@@ -104,7 +109,7 @@ public class SecretCacheConfiguration {
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP2")
     public void setClient(SecretsManagerClient client) {
-        this.client = client;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -116,10 +121,8 @@ public class SecretCacheConfiguration {
      * @return The updated ClientConfiguration object with the new client setting.
      */
     public SecretCacheConfiguration withClient(SecretsManagerClient client) {
-        this.setClient(client);
-        return this;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
-
 
     /**
      * Returns the interface used to hook in-memory cache updates.
@@ -128,9 +131,8 @@ public class SecretCacheConfiguration {
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP")
     public SecretCacheHook getCacheHook() {
-        return cacheHook;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
-
 
     /**
      * Sets the interface used to hook the in-memory cache.
@@ -140,9 +142,8 @@ public class SecretCacheConfiguration {
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP2")
     public void setCacheHook(SecretCacheHook cacheHook) {
-        this.cacheHook = cacheHook;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
-
 
     /**
      * Sets the interface used to hook the in-memory cache.
@@ -152,10 +153,8 @@ public class SecretCacheConfiguration {
      * @return The updated ClientConfiguration object with the new setting.
      */
     public SecretCacheConfiguration withCacheHook(SecretCacheHook cacheHook) {
-        this.setCacheHook(cacheHook);
-        return this;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
-
 
     /**
      * Returns the max cache size that should be used for creating the cache.
@@ -163,7 +162,7 @@ public class SecretCacheConfiguration {
      * @return The max cache size.
      */
     public int getMaxCacheSize() {
-        return this.maxCacheSize;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -173,7 +172,7 @@ public class SecretCacheConfiguration {
      *            The max cache size.
      */
     public void setMaxCacheSize(int maxCacheSize) {
-        this.maxCacheSize = maxCacheSize;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -184,8 +183,7 @@ public class SecretCacheConfiguration {
      * @return The updated ClientConfiguration object with the new max setting.
      */
     public SecretCacheConfiguration withMaxCacheSize(int maxCacheSize) {
-        this.setMaxCacheSize(maxCacheSize);
-        return this;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -194,7 +192,7 @@ public class SecretCacheConfiguration {
      * @return The TTL in milliseconds before refreshing cached items.
      */
     public long getCacheItemTTL() {
-        return this.cacheItemTTL;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -205,7 +203,7 @@ public class SecretCacheConfiguration {
      *            The TTL for cached items before requiring a refresh.
      */
     public void setCacheItemTTL(long cacheItemTTL) {
-        this.cacheItemTTL = cacheItemTTL;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -217,8 +215,7 @@ public class SecretCacheConfiguration {
      * @return The updated ClientConfiguration object with the new TTL setting.
      */
     public SecretCacheConfiguration withCacheItemTTL(long cacheItemTTL) {
-        this.setCacheItemTTL(cacheItemTTL);
-        return this;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -227,7 +224,7 @@ public class SecretCacheConfiguration {
      * @return The version stage used in requesting secret values.
      */
     public String getVersionStage() {
-        return this.versionStage;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -238,7 +235,7 @@ public class SecretCacheConfiguration {
      *            The version stage used for requesting secret values.
      */
     public void setVersionStage(String versionStage) {
-        this.versionStage = versionStage;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -250,8 +247,7 @@ public class SecretCacheConfiguration {
      * @return The updated ClientConfiguration object with the new version stage setting.
      */
     public SecretCacheConfiguration withVersionStage(String versionStage) {
-        this.setVersionStage(versionStage);
-        return this;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -260,7 +256,7 @@ public class SecretCacheConfiguration {
      * @return The maximum jitter sleep time in milliseconds used with refreshing secrets.
      */
     public long getForceRefreshJitterMillis() {
-        return this.forceRefreshJitterMillis;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -274,10 +270,7 @@ public class SecretCacheConfiguration {
      * @throws IllegalArgumentException if the value is negative
      */
     public void setForceRefreshJitterMillis(long forceRefreshJitterMillis) {
-        if (forceRefreshJitterMillis < 0) {
-            throw new IllegalArgumentException("Force refresh jitter must be greater than or equal to zero");
-        }
-        this.forceRefreshJitterMillis = forceRefreshJitterMillis;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -291,8 +284,7 @@ public class SecretCacheConfiguration {
      * @throws IllegalArgumentException if the value is negative
      */
     public SecretCacheConfiguration withForceRefreshJitterMillis(long forceRefreshJitterMillis) {
-        this.setForceRefreshJitterMillis(forceRefreshJitterMillis);
-        return this;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
@@ -301,36 +293,35 @@ public class SecretCacheConfiguration {
      * @return true if Post-Quantum TLS is enabled, false otherwise.
      */
     public boolean isPostQuantumTlsEnabled() {
-        return this.postQuantumTlsEnabled;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
      * Sets whether to enable Post-Quantum TLS.
      *
-     * <p>Note: This setting is mutually exclusive with providing a custom client via 
-     * {@link #withClient(SecretsManagerClient)}. If both are specified, an 
+     * <p>Note: This setting is mutually exclusive with providing a custom client via
+     * {@link #withClient(SecretsManagerClient)}. If both are specified, an
      * {@link IllegalArgumentException} will be thrown.
-     * 
+     *
      * @param postQuantumTlsEnabled
      *            Whether to enable Post-Quantum TLS.
      */
     public void setPostQuantumTlsEnabled(boolean postQuantumTlsEnabled) {
-        this.postQuantumTlsEnabled = postQuantumTlsEnabled;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     /**
      * Sets whether to enable Post-Quantum TLS.
-     * 
-     * <p>Note: This setting is mutually exclusive with providing a custom client via 
-     * {@link #withClient(SecretsManagerClient)}. If both are specified, an 
+     *
+     * <p>Note: This setting is mutually exclusive with providing a custom client via
+     * {@link #withClient(SecretsManagerClient)}. If both are specified, an
      * {@link IllegalArgumentException} will be thrown.
-     * 
+     *
      * @param postQuantumTlsEnabled
      *            Whether to enable Post-Quantum TLS.
      * @return The updated SecretCacheConfiguration object with the new PQTLS setting.
      */
     public SecretCacheConfiguration withPostQuantumTlsEnabled(boolean postQuantumTlsEnabled) {
-        this.setPostQuantumTlsEnabled(postQuantumTlsEnabled);
-        return this;
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 }
